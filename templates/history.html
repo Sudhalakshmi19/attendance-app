@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📜 Attendance History</h1>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to Today</a>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="list-section">
+            {% if records %}
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in records %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ r.name }}</td>
+                                <td>
+                                    <span class="badge badge-{{ r.status|lower }}">{{ r.status }}</span>
+                                </td>
+                                <td>{{ r.date }}</td>
+                                <td>{{ r.time }}</td>
+                                <td>
+                                    <form action="{{ url_for('delete_record', record_id=r.id) }}" method="POST" class="inline-form" onsubmit="return confirm('Delete this record?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <p class="count">Total: {{ records|length }} record(s)</p>
+            {% else %}
+                <p class="empty">No attendance records found.</p>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Attendance System</h1>
+            <p class="date">Today: <strong>{{ today }}</strong></p>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="form-section">
+            <h2>Mark Attendance</h2>
+            <form action="{{ url_for('mark_attendance') }}" method="POST" id="attendanceForm">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="status" value="Present" checked>
+                            <span class="present">Present</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="status" value="Absent">
+                            <span class="absent">Absent</span>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Attendance</button>
+            </form>
+        </section>
+
+        <section class="list-section">
+            <div class="section-header">
+                <h2>Today's Attendance</h2>
+                <a href="{{ url_for('history') }}" class="btn btn-secondary">View History</a>
+            </div>
+
+            {% if records %}
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Time</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in records %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ r.name }}</td>
+                                <td>
+                                    <span class="badge badge-{{ r.status|lower }}">{{ r.status }}</span>
+                                </td>
+                                <td>{{ r.time }}</td>
+                                <td>
+                                    <form action="{{ url_for('delete_record', record_id=r.id) }}" method="POST" class="inline-form" onsubmit="return confirm('Delete this record?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <p class="count">Total: {{ records|length }} record(s)</p>
+            {% else %}
+                <p class="empty">No attendance marked yet for today.</p>
+            {% endif %}
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
