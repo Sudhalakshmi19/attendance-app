@@ -115,8 +115,8 @@ def delete_record(record_id):
     flash("Record deleted.", "success")
     return redirect(request.referrer or url_for("index"))
 
+# Create database table when the app starts
+init_db()
 
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True, host="0.0.0.0", port=5000)
-    
